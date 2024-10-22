@@ -34,7 +34,7 @@ def main(context):
     # Step 3: Fetch the file from Appwrite Storage
     file_id = context.req['payload'].get('fileId')
     try:
-        file_response = storage.get_file_download('bucket-id', file_id)
+        file_response = storage.get_file_download('670825a2000361d39c6e', file_id)
         image = Image.open(io.BytesIO(file_response))
     except AppwriteException as err:
         context.error(f"Failed to fetch image from storage: {repr(err)}")
