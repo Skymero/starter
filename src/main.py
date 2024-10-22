@@ -55,7 +55,7 @@ def main(context):
 
         # Upload the processed image to Appwrite Storage
         processed_file_response = storage.create_file(
-            'bucket-id', 
+            '670825a2000361d39c6e', 
             'unique()', 
             buffer, 
             content_type="image/PNG"
