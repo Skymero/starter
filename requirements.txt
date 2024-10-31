@@ -1,1 +1,8 @@
 appwrite
+Pillow
+tensorflow
+opencv-python
+gdown
+mahotas
+matplotlib
+
