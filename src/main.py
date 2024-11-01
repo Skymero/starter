@@ -7,6 +7,7 @@ from appwrite.exception import AppwriteException
 from PIL import Image
 import io
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 
 
@@ -63,6 +64,7 @@ def main(context):
     try:
         file_response = storage.get_file_download('670825a2000361d39c6e', file_id)
         image = Image.open(io.BytesIO(file_response))
+        plt.imshow(image)
     except AppwriteException as err:
         context.error(f"Failed to fetch image from storage: {repr(err)}")
         return context.res.text("Failed to fetch image", 500)
