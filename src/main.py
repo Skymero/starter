@@ -11,6 +11,7 @@ import io
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import posixpath
+import imp
 
 
 
@@ -49,7 +50,8 @@ def main(context):
 
     # Get the repository URL and other details from environment variables or context
     repo_url = os.environ.get('REPO_URL', 'https://github.com/Skymero/WoundSize.git')
-    clone_dir = '/tmp/cloned_repo/WoundSize/WoundSize'  # A temporary location to clone the repo
+    clone_dir_p = 'C:\\tmp\\cloned_repo\\WoundSize\\WoundSize'  # A temporary location to clone the repo
+    clone_dir = os.path.normpath(clone_dir_p)
 
     # Step 1: Shallow Clone the Repository
     try:
@@ -67,7 +69,11 @@ def main(context):
         # Navigate to the cloned repository directory
         # setup_script_path = posixpath.join(clone_dir, 'setup.sh')
         # print("Setup script path:", setup_script_path)
-        subprocess.run(["bash", 'deepskin_setup.sh'], check=True)
+        clone_path = 'C:\\tmp\\cloned_repo\\WoundSize\\WoundSize\\Deepskin'
+        normalized_path = os.path.normpath(clone_path)
+        print("Normalized path:", normalized_path)
+        subprocess.run(['pip', 'install', '-e', normalized_path], check=True)
+        # subprocess.run(["bash", 'deepskin_setup.sh'], check=True)
     except subprocess.CalledProcessError as e:
         context.error(f"Failed to run setup script: {repr(e)}")
         return context.res.text("Setup script failed", 500)
@@ -84,10 +90,33 @@ def main(context):
         print(f"Failed to fetch image from storage: {repr(err)}")
         return print("Failed to fetch image", 500)
 
+    # Check if the path exists
+    path = os.path.join(clone_dir, 'images')
+    if os.path.exists(path):
+        print("The path exists")
+    else:
+        print("The path does not exist")
+    
+    path = os.path.join(clone_dir, 'images\\wound.png')
+    if os.path.isfile(path):
+        print("The file exists")
+    else:
+        print("The file does not exist")
+    
+
+
+    # Get the path to the wound_analysis.py file
+    wound_analysis_path = os.path.join(clone_dir, 'wound_analysis.py')
+    wound_analysis_path = os.path.normpath(wound_analysis_path)
+
+    # Import the wound_analysis module
+
+    wound_analysis = imp.load_source('wound_analysis', wound_analysis_path)
+    import wound_analysis as image_processor # Dynamically importing the cloned module
     # Step 4: Execute Image Processing Code from the Cloned Repository
     try:
         # Assuming your cloned repo has a module named `image_processor.py` with a function `process_image`
-        import wound_analysis as image_processor  # Dynamically importing the cloned module
+
 
         # Example: Call the image processing function from the cloned repo
         processed_image = image_processor.main(image)  # Replace with your actual function and logic
