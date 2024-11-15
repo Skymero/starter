@@ -10,6 +10,7 @@ from PIL import Image
 import io
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import posixpath
 
 
 
@@ -61,15 +62,27 @@ def main(context):
     # Step 2: Add the cloned repository to the Python path
     sys.path.insert(0, clone_dir)
 
+    # Step 3: Run the setup script
+    try:
+        # Navigate to the cloned repository directory
+        # setup_script_path = posixpath.join(clone_dir, 'setup.sh')
+        # print("Setup script path:", setup_script_path)
+        subprocess.run(["bash", 'deepskin_setup.sh'], check=True)
+    except subprocess.CalledProcessError as e:
+        context.error(f"Failed to run setup script: {repr(e)}")
+        return context.res.text("Setup script failed", 500)
+
     # Step 3: Fetch the file from Appwrite Storage
     file_id = context['req']['payload'].get('fileId')
+    print(file_id)
+    
     try:
         file_response = storage.get_file_download('670825a2000361d39c6e', file_id)
         image = Image.open(io.BytesIO(file_response))
         plt.imshow(image)
     except AppwriteException as err:
-        context.error(f"Failed to fetch image from storage: {repr(err)}")
-        return context.res.text("Failed to fetch image", 500)
+        print(f"Failed to fetch image from storage: {repr(err)}")
+        return print("Failed to fetch image", 500)
 
     # Step 4: Execute Image Processing Code from the Cloned Repository
     try:
